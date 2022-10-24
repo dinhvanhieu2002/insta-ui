@@ -13,13 +13,16 @@ module.exports = {
         medium: '#0095f6',
       },
       black: {
-        light: '#262626',
+        primary: '#262626',
+        light: '#8e8e8e',
         faded: '#00000059',
       },
       gray: {
         base: '#616161',
         background: '#fafafa',
         primary: '#dbdbdb',
+        highlight: '#efefef',
+        bold: '#16182357',
       },
       red: {
         primary: '#ed4956',

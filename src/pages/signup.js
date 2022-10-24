@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
+import signupService from '../services/signup'
 import * as ROUTE from '../constants/routes'
 
 export default function SignUp() {
@@ -12,8 +13,21 @@ export default function SignUp() {
   const [error, setError] = useState('')
   const isInvalid = password === '' || username === '' || fullName === '' || email === ''
 
-  const handleLogin = (e) => {
-    e.preventDefault()
+  const handleSignup = async (event) => {
+    event.preventDefault()
+
+    try {
+      const newUser = await signupService.signup({
+        username,
+        fullName,
+        email,
+        password,
+      })
+
+      console.log(newUser)
+    } catch (error) {
+      setError(error)
+    }
   }
 
   useEffect(() => {
@@ -33,7 +47,7 @@ export default function SignUp() {
           </h1>
           {error && <p className="mb-4 text-xs text-red-primary">{error}</p>}
 
-          <form onSubmit={handleLogin} method="POST">
+          <form onSubmit={handleSignup} method="POST">
             <input
               aria-label="Enter your email"
               type="email"
