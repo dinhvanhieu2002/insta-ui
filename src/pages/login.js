@@ -1,25 +1,27 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Facebook from '../components/Facebook'
 import loginService from '../services/login'
-import * as ROUTE from '../constants/routes'
+import * as ROUTES from '../constants/routes'
+// import { getUserByUsername } from '../services/user'
 
 export default function Login() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [error, setError] = useState('')
+  // const [error, setError] = useState('')
   const isInvalid = password === '' || username === ''
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedInstaUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-    }
+    // const userToken = window.localStorage.getItem('userToken')
+    // if (userToken) {
+    //   const user = JSON.parse(userToken)
+    //   // setUser(user)
+    // }
+    // navigate(ROUTES.DASHBOARD)
   }, [])
 
   const handleLogin = async (event) => {
@@ -30,13 +32,14 @@ export default function Login() {
         password,
       })
 
-      window.localStorage.setItem('loggedInstaUser', JSON.stringify(user))
+      window.localStorage.setItem('userToken', JSON.stringify(user))
 
       setTimeout(() => {
-        window.localStorage.removeItem('loggedInstaUser')
+        window.localStorage.removeItem('userToken')
       }, 1000 * 60 * 60)
 
-      setUser(user)
+      // setUser(user)
+      navigate('/')
       setUsername('')
       setPassword('')
     } catch (error) {
@@ -45,8 +48,6 @@ export default function Login() {
         setErrorMessage(null)
       }, 5000)
     }
-
-    console.log(user)
   }
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function Login() {
           <h1 className="flex justify-center w-full">
             <img src="/images/logo.svg" alt="Insta logo" className="mt-2 w-6/12 mb-4" />
           </h1>
-          {error && <p className="mb-4 text-xs text-red-primary">{error}</p>}
+          {errorMessage && <p className="mb-4 text-xs text-red-primary">{errorMessage}</p>}
 
           <form onSubmit={handleLogin} method="POST">
             <input
@@ -94,7 +95,7 @@ export default function Login() {
         <div className="flex justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary">
           <p className="text-sm">
             Don't have an account
-            <Link to={ROUTE.SIGN_UP} className="font-bold text-blue-medium">
+            <Link to={ROUTES.SIGN_UP} className="font-bold text-blue-medium">
               Sign up
             </Link>
           </p>

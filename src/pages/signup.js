@@ -6,7 +6,7 @@ import * as ROUTE from '../constants/routes'
 
 export default function SignUp() {
   const [username, setUsername] = useState('')
-  const [fullName, setFullname] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -60,7 +60,7 @@ export default function SignUp() {
               type="text"
               placeholder="Full name"
               className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setFullname(target.value)}
+              onChange={({ target }) => setFullName(target.value)}
             />
             <input
               aria-label="Enter your username"
