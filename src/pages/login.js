@@ -8,7 +8,7 @@ import { toast } from 'react-toastify'
 import userApi from '../api/modules/user'
 import { setUser } from '../redux/features/userSlice'
 
-import Facebook from '../components/Facebook'
+import ButtonFacebook from '../components/Button/ButtonFacebook'
 
 import * as ROUTES from '../constants/routes'
 import LoginScreenShot from '../components/LoginScreenShot'
@@ -41,7 +41,7 @@ export default function Login() {
         signinForm.resetForm()
         dispatch(setUser(response))
         toast.success('Sign in success')
-        console.log('login success')
+        console.log(response)
       }
 
       if (error) {
@@ -95,6 +95,7 @@ export default function Login() {
             <FormDivider className="my-3" />
 
             {/* button facebook */}
+            <ButtonFacebook />
 
             <a href="#!" className={clsx('block text-sm w-full text-center mt-7', 'text-primary')}>
               Forgot password?

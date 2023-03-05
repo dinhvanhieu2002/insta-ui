@@ -21,13 +21,13 @@ const userApi = {
       return { error }
     }
   },
-  signup: async ({ username, fullname, password, confirmPassword }) => {
+  signup: async ({ username, fullname, password, email }) => {
     try {
       const response = await privateClient.post(userEndpoints.signup, {
         username,
         fullname,
         password,
-        confirmPassword,
+        email,
       })
 
       return { response }

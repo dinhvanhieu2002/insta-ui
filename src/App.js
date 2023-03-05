@@ -7,6 +7,7 @@
 // import RequiredAuth from './components/RequiredAuth'
 // import ProtectedRoute from './helpers/protected-route'
 import Login from './pages/login'
+import SignUp from './pages/signup'
 
 // const Login = lazy(() => import('./pages/login'))
 // const SignUp = lazy(() => import('./pages/signup'))
@@ -17,7 +18,8 @@ import Login from './pages/login'
 
 const App = () => {
   return (
-    <Login />
+    // <Login />
+    <SignUp />
     // <BrowserRouter>
     //   <Routes>
     //     <Route></Route>

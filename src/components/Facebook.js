@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import FacebookLogin from 'react-facebook-login'
-
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import clsx from 'clsx'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebookSquare } from '@fortawesome/free-brands-svg-icons'
 export default function Facebook() {
   const [facebookUser, setFacebookUser] = useState({
     isLoggedIn: false,
@@ -43,6 +45,15 @@ export default function Facebook() {
         fields="name,email,picture"
         onClick={componentClicked}
         callback={responseFacebook}
+        render={(renderProps) => (
+          <button
+            onClick={renderProps.onClick}
+            className={clsx('btn text-sm w-full gap-x-2 h-auth-btn-h', 'text-white bg-primary')}
+          >
+            <FontAwesomeIcon icon={faFacebookSquare} className="text-white" size="lg" />
+            <span>Log in with Facebook</span>
+          </button>
+        )}
       />
     )
   }

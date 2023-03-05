@@ -1,102 +1,140 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import clsx from 'clsx'
+import * as Yup from 'yup'
+import { useFormik } from 'formik'
+import { toast } from 'react-toastify'
 
-import signupService from '../services/signup'
-import * as ROUTE from '../constants/routes'
+import userApi from '../api/modules/user'
+import FormDivider from '../components/Form/FormDivider'
+import Meta from '../layouts/Meta'
+import { logo } from '../assets/images'
+import ButtonFacebook from '../components/Button/ButtonFacebook'
 
-export default function SignUp() {
-  const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+const SignUp = () => {
+  const [isLoginRequest, setIsLoginRequest] = useState(false)
+  const [errorMessage, setErrorMessage] = useState()
 
-  const [error, setError] = useState('')
-  const isInvalid = password === '' || username === '' || fullName === '' || email === ''
+  const signupForm = useFormik({
+    initialValues: {
+      username: '',
+      fullname: '',
+      email: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().min(8, 'username minimun 8 characters').required('username is required'),
+      fullname: Yup.string().min(8, 'fullname minimun 8 characters').required('fullname is required'),
+      email: Yup.string().min(8, 'email minimun 8 characters').required('email is required'),
+      password: Yup.string().min(8, 'password minimun 8 characters').required('password is required'),
+    }),
+    onSubmit: async (values) => {
+      setErrorMessage(undefined)
+      setIsLoginRequest(true)
+      const { response, error } = await userApi.signup(values)
+      setIsLoginRequest(false)
 
-  const handleSignup = async (event) => {
-    event.preventDefault()
+      if (response) {
+        signupForm.resetForm()
+        toast.success('Sign up success')
+        //redirect to login
+        console.log(response)
+      }
 
-    try {
-      const newUser = await signupService.signup({
-        username,
-        fullName,
-        email,
-        password,
-      })
-
-      navigate('/login')
-      console.log(newUser)
-    } catch (error) {
-      setError(error)
-    }
-  }
-
-  useEffect(() => {
-    document.title = 'Sign Up - Instagram'
-    setError(null)
-  }, [])
+      if (error) {
+        setErrorMessage(error.message)
+        console.log('login faild')
+      }
+    },
+  })
 
   return (
-    <div className="container flex mx-auto max-w-screen-md items-center h-screen">
-      <div className="flex w-3/5">
-        <img src="/images/iphone-with-profile.png" alt="iPhone with Insta Profile" className="" />
-      </div>
-      <div className="flex flex-col w-2/5">
-        <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4">
-          <h1 className="flex justify-center w-full">
-            <img src="/images/logo.svg" alt="Insta logo" className="mt-2 w-6/12 mb-4" />
+    <Meta title="Signup - Instagram">
+      <div className={clsx('w-form-w mx-auto py-9')}>
+        <div className={clsx('wrapper-border px-10 py-12')}>
+          <img className="mx-auto" src={logo} alt="Logo" />
+          <h1 className={clsx('font-medium mt-4 mb-4 text-center', 'text-gray-base')}>
+            Sign up to see photos and videos from your friends.
           </h1>
-          {error && <p className="mb-4 text-xs text-red-primary">{error}</p>}
 
-          <form onSubmit={handleSignup} method="POST">
-            <input
-              aria-label="Enter your email"
-              type="email"
-              placeholder="Email"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setEmail(target.value)}
-            />
-            <input
-              aria-label="Enter your full name"
-              type="text"
-              placeholder="Full name"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setFullName(target.value)}
-            />
-            <input
-              aria-label="Enter your username"
-              type="text"
-              placeholder="Username"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-            <input
-              aria-label="Enter your password"
-              type="password"
-              placeholder="Password"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-            <button
-              disabled={isInvalid}
-              type="submit"
-              className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${isInvalid && 'opacity-50'}`}
-            >
+          <ButtonFacebook />
+
+          <FormDivider className="my-3" />
+
+          <form className="flex flex-col gap-y-3" onSubmit={signupForm.handleSubmit}>
+            <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+              <input
+                className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={signupForm.values.email}
+                onChange={signupForm.handleChange}
+                color="success"
+              />
+              {signupForm.touched.email && signupForm.errors.email && (
+                <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signupForm.errors.email}</span>
+              )}
+            </div>
+            <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+              <input
+                className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                type="text"
+                placeholder="Full name"
+                name="fullname"
+                value={signupForm.values.fullname}
+                onChange={signupForm.handleChange}
+                color="success"
+              />
+              {signupForm.touched.fullname && signupForm.errors.fullname && (
+                <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signupForm.errors.fullname}</span>
+              )}
+            </div>
+            <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+              <input
+                className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                type="text"
+                placeholder="Username"
+                name="username"
+                value={signupForm.values.username}
+                onChange={signupForm.handleChange}
+                color="success"
+              />
+              {signupForm.touched.username && signupForm.errors.username && (
+                <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signupForm.errors.username}</span>
+              )}
+            </div>
+            <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+              <input
+                className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={signupForm.values.password}
+                onChange={signupForm.handleChange}
+                color="success"
+              />
+              {signupForm.touched.password && signupForm.errors.password && (
+                <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signupForm.errors.password}</span>
+              )}
+            </div>
+            <button className={clsx('btn text-sm h-auth-btn-h w-full gap-x-2 mt-2', 'text-white bg-primary')}>
               Sign up
             </button>
+            <p className={clsx('text-xs text-center mt-2', 'text-base-gray')}>
+              By signing up, you agree to our <span className="font-medium">Terms</span>,{' '}
+              <span className="font-medium">Data Policy</span> and <span className="font-medium">Cookies Policy</span>.
+            </p>
           </form>
         </div>
-        <div className="flex justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary">
-          <p className="text-sm">
-            Have an account?
-            <Link to={ROUTE.LOGIN} className="font-bold text-blue-medium">
-              Log in
-            </Link>
-          </p>
+        <div className="wrapper-border flex-center text-sm py-6 mt-3">
+          Have an account?
+          <a href="#!" className={clsx('ml-1', 'text-primary')}>
+            Log in
+          </a>
         </div>
       </div>
-    </div>
+    </Meta>
   )
 }
+
+export default SignUp
