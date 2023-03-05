@@ -15,7 +15,7 @@ export default function Sidebar() {
 
   return (
     <div className="p-4">
-      <User username={user.username} fullName={user.fullname} />
+      <User username={user.username} fullName={user.fullname} avatar={user.avatar} />
       <Suggestions userId={user.id} />
     </div>
   )

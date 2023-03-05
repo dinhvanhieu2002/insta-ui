@@ -1,16 +1,19 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import UserContext from '../../context/user'
 import Skeleton from 'react-loading-skeleton'
 import { updateFollowedUserFollowers, updateLoggedInUserFollowing } from '../../services/user'
+import { getConversatonsByUserId, createNewConversation } from '../../services/conversation'
 
 export default function Header({ isLoggedUser, following, followers, postCount, userProfile }) {
+  const navigate = useNavigate()
   const {
     user: { user },
   } = useContext(UserContext)
   const followed = userProfile.followers.includes(user.id) ? true : false
   const [isFollowingProfile, setIsFollowingProfile] = useState(followed)
   const [followersCount, setFollowerCount] = useState(followers)
-  const activeBtnFollow = isLoggedUser === false
+  const activeBtnFollow = !isLoggedUser
 
   const handleToggleFollow = async () => {
     setIsFollowingProfile((isFollowingProfile) => !isFollowingProfile)
@@ -24,6 +27,24 @@ export default function Header({ isLoggedUser, following, followers, postCount, 
     // })
     // await toggleFollow(isFollowingProfile, user.docId, profileDocId, profileUserId, user.userId)
   }
+  console.log(activeBtnFollow)
+
+  const handleSendMessage = async () => {
+    //tim kiem members trong conversation neu co profileId va userId thi chuyen den chat page
+    //neu chua co thi tao conversation moi, và chuyen den chat
+    // const res = await getConversatonsByUserId(userProfile.id)
+    // console.log('conversation', res)
+    // if (res.length > 0) {
+    //   navigate('/chat')
+    // } else {
+    //   //create conservation
+    //   const newConversation = await createNewConversation({ creator: user.id, members: [user.id, userProfile.id] })
+    //   console.log('new conversation', newConversation)
+    //   if (newConversation) {
+    //     navigate('/chat')
+    //   }
+    // }
+  }
 
   return (
     <div className="grid grid-cols-3 gap-4 justify-between mx-auto max-w-screen-lg py-8">
@@ -31,7 +52,7 @@ export default function Header({ isLoggedUser, following, followers, postCount, 
         {userProfile ? (
           <img
             className="rounded-full h-40 w-40 flex object-cover"
-            alt={`${userProfile.username} profile picture`}
+            alt={`${userProfile.username} profile`}
             src={userProfile.avatar}
           />
         ) : (
@@ -41,22 +62,31 @@ export default function Header({ isLoggedUser, following, followers, postCount, 
       <div className="flex items-center justify-center flex-col col-span-2">
         <div className="container flex items-center">
           <p className="text-2xl mr-4">{userProfile.username}</p>
-          {activeBtnFollow && isFollowingProfile === null ? (
+          {activeBtnFollow === false ? (
             <Skeleton count={1} width={80} height={32} />
           ) : (
             activeBtnFollow && (
-              <button
-                className="bg-blue-medium font-bold text-sm rounded text-white w-20 h-8"
-                type="button"
-                onClick={handleToggleFollow}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    handleToggleFollow()
-                  }
-                }}
-              >
-                {isFollowingProfile ? 'Unfollow' : 'Follow'}
-              </button>
+              <div>
+                <button
+                  className="bg-blue-medium font-bold text-sm rounded text-white w-20 h-8"
+                  type="button"
+                  onClick={handleToggleFollow}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      handleToggleFollow()
+                    }
+                  }}
+                >
+                  {isFollowingProfile ? 'Unfollow' : 'Follow'}
+                </button>
+                <button
+                  className="bg-gray-highlight font-bold text-sm rounded text-base-gray w-32 h-8 ml-3"
+                  type="button"
+                  onClick={handleSendMessage}
+                >
+                  Send Message
+                </button>
+              </div>
             )
           )}
         </div>

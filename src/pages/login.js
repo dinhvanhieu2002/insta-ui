@@ -1,106 +1,113 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import clsx from 'clsx'
+import { useFormik } from 'formik'
+import { useDispatch } from 'react-redux'
+import * as Yup from 'yup'
+import { toast } from 'react-toastify'
+import userApi from '../api/modules/user'
+import { setUser } from '../redux/features/userSlice'
 
 import Facebook from '../components/Facebook'
-import loginService from '../services/login'
+
 import * as ROUTES from '../constants/routes'
-// import { getUserByUsername } from '../services/user'
+import LoginScreenShot from '../components/LoginScreenShot'
+import FormDivider from '../components/Form/FormDivider'
+import Meta from '../layouts/Meta'
+import { logo } from '../assets/images'
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoginRequest, setIsLoginRequest] = useState(false)
+  const [errorMessage, setErrorMessage] = useState()
 
-  // const [error, setError] = useState('')
-  const isInvalid = password === '' || username === ''
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    // const userToken = window.localStorage.getItem('userToken')
-    // if (userToken) {
-    //   const user = JSON.parse(userToken)
-    //   // setUser(user)
-    // }
-    // navigate(ROUTES.DASHBOARD)
-  }, [])
+  const signinForm = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().min(8, 'username minimun 8 characters').required('username is required'),
+      password: Yup.string().min(8, 'password minimum 8 characters').required('password is required'),
+    }),
+    onSubmit: async (values) => {
+      setErrorMessage(undefined)
+      setIsLoginRequest(true)
+      const { response, error } = await userApi.signin(values)
+      setIsLoginRequest(false)
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
+      if (response) {
+        signinForm.resetForm()
+        dispatch(setUser(response))
+        toast.success('Sign in success')
+        console.log('login success')
+      }
 
-      window.localStorage.setItem('userToken', JSON.stringify(user))
-
-      setTimeout(() => {
-        window.localStorage.removeItem('userToken')
-      }, 1000 * 60 * 60)
-
-      // setUser(user)
-      navigate('/')
-      setUsername('')
-      setPassword('')
-    } catch (error) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
-  }
-
-  useEffect(() => {
-    document.title = 'Login - Instagram'
-  }, [])
+      if (error) {
+        setErrorMessage(error.message)
+        console.log('login faild')
+      }
+    },
+  })
 
   return (
-    <div className="container flex mx-auto max-w-screen-md items-center h-screen mt-8">
-      <div className="flex w-3/5">
-        <img src="/images/iphone-with-profile.png" alt="iPhone with Insta Profile" className="" />
-      </div>
-      <div className="flex flex-col w-2/5">
-        <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4">
-          <h1 className="flex justify-center w-full">
-            <img src="/images/logo.svg" alt="Insta logo" className="mt-2 w-6/12 mb-4" />
-          </h1>
-          {errorMessage && <p className="mb-4 text-xs text-red-primary">{errorMessage}</p>}
+    <Meta title="Login - Instagram">
+      <div className={clsx('flex justify-center lg:w-container-w mx-auto')}>
+        <LoginScreenShot />
+        <div className={clsx('w-form-w py-9')}>
+          <div className={clsx('wrapper-border px-10 py-12')}>
+            <img className={clsx('mx-auto')} src={logo} alt="Logo" />
+            <form className={clsx('flex flex-col gap-y-3 mt-10')} onSubmit={signinForm.handleSubmit}>
+              <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+                <input
+                  className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                  type="text"
+                  placeholder="Username"
+                  name="username"
+                  value={signinForm.values.username}
+                  onChange={signinForm.handleChange}
+                  color="success"
+                />
+                {signinForm.touched.username && signinForm.errors.username && (
+                  <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signinForm.errors.username}</span>
+                )}
+              </div>
+              <div className={clsx('border-1 border-line rounded-sm', 'bg-body')}>
+                <input
+                  className={clsx('w-full px-2 py-2 text-sm', 'placeholder:text-sm-1')}
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={signinForm.values.password}
+                  onChange={signinForm.handleChange}
+                  color="success"
+                />
+                {signinForm.touched.password && signinForm.errors.password && (
+                  <span className={clsx('text-sm-1 mt-1 text-left', 'text-red-500')}>{signinForm.errors.password}</span>
+                )}
+              </div>
+              <button className={clsx('btn text-sm w-full gap-x-2 h-auth-btn-h mt-2', 'text-white bg-primary')}>
+                Log in
+              </button>
+            </form>
 
-          <form onSubmit={handleLogin} method="POST">
-            <input
-              aria-label="Enter your username"
-              type="text"
-              placeholder="Username"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-            <input
-              aria-label="Enter your password"
-              type="password"
-              placeholder="Password"
-              className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-            <button
-              disabled={isInvalid}
-              type="submit"
-              className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${isInvalid && 'opacity-50'}`}
-            >
-              Log in
-            </button>
-            <span>or</span>
-            <Facebook />
-          </form>
-        </div>
-        <div className="flex justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary">
-          <p className="text-sm">
-            Don't have an account
-            <Link to={ROUTES.SIGN_UP} className="font-bold text-blue-medium">
+            <FormDivider className="my-3" />
+
+            {/* button facebook */}
+
+            <a href="#!" className={clsx('block text-sm w-full text-center mt-7', 'text-primary')}>
+              Forgot password?
+            </a>
+          </div>
+          <div className={clsx('wrapper-border flex-center text-sm py-6 mt-3')}>
+            Don&apos;t have an account?
+            <a href="#!" className={clsx('ml-1', 'text-primary')}>
               Sign up
-            </Link>
-          </p>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+    </Meta>
   )
 }

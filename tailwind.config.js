@@ -11,6 +11,9 @@ module.exports = {
       red: theme('colors.red.primary'),
     }),
     colors: {
+      body: '#fafafa',
+      line: '#dbdbdb',
+      primary: '#0095f6',
       white: '#ffffff',
       blue: {
         medium: '#0095f6',
@@ -30,6 +33,14 @@ module.exports = {
       },
       red: {
         primary: '#ed4956',
+        500: '#f56565;',
+      },
+    },
+    spacing: require('./src/lib/tailwindcss/spacing'),
+    fontSize: require('./src/lib/tailwindcss/fontSize'),
+    extend: {
+      borderWidth: {
+        1: '1px',
       },
     },
   },

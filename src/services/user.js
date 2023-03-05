@@ -14,6 +14,10 @@ export async function getUserByUsername(username) {
 //   return response.data
 // }
 
+const userApi = {
+  getUserById,
+}
+
 const getUserById = (id) => {
   const request = axios.get(baseUrl + '/id/' + id)
 
@@ -36,4 +40,4 @@ export async function updateFollowedUserFollowers(profileId, userId) {
   await axios.put(`${baseUrl}/followers/${profileId}/${userId}`)
 }
 
-export default { getUserById }
+export default userApi

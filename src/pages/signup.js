@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import signupService from '../services/signup'
 import * as ROUTE from '../constants/routes'
 
 export default function SignUp() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -24,6 +26,7 @@ export default function SignUp() {
         password,
       })
 
+      navigate('/login')
       console.log(newUser)
     } catch (error) {
       setError(error)

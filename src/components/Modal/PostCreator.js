@@ -71,6 +71,7 @@ export default function PostCreator({ visible, onClose }) {
         <img
           className="rounded-br-lg rounded-bl-lg max-w-none h-96 object-cover overflow-x-hidden"
           src={file.preview}
+          alt=""
           style={img}
           onLoad={() => {
             URL.revokeObjectURL(file.preview)

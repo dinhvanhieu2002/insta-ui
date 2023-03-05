@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { updateFollowedUserFollowers, updateLoggedInUserFollowing } from '../../services/user'
 
-export default function SuggestedProfile({ username, profileId, userId }) {
+export default function SuggestedProfile({ avatar, username, profileId, userId }) {
   const [followed, setFollowed] = useState(false)
 
   async function handleFollowed() {
@@ -17,7 +17,11 @@ export default function SuggestedProfile({ username, profileId, userId }) {
   return !followed ? (
     <div className="flex flex-row items-center align-items justify-between">
       <div className="flex items-center justify-between">
-        <img className="rounded w-8 flex mr-3" src="https://el.tvu.edu.vn/images/avatar/no-avatar.png" alt="" />
+        <img
+          className="rounded-full object-cover w-8 h-8 flex mr-3"
+          src={avatar || 'https://el.tvu.edu.vn/images/avatar/no-avatar.png'}
+          alt=""
+        />
         <Link to={`/p/${username}`}>
           <p className="font-bold text-sm">{username}</p>
         </Link>

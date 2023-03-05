@@ -8,6 +8,7 @@ import UserProfile from '../components/Profile'
 export default function Profile() {
   const { username } = useParams()
   const [user, setUser] = useState(null)
+  console.log(username)
 
   const navigate = useNavigate()
 
@@ -22,6 +23,8 @@ export default function Profile() {
     }
     checkUserExists()
   }, [username, navigate])
+
+  console.log(user)
 
   return user?.username ? (
     <div className="bg-gray-background min-h-screen">

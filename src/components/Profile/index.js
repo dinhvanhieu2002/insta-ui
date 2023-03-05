@@ -23,7 +23,7 @@ export default function Profile({ userProfile }) {
     if (userProfile.id) {
       getPosts()
     }
-  }, [])
+  }, [userProfile.id])
 
   useEffect(() => {
     if (userProfile.id === user.id) {
@@ -41,7 +41,8 @@ export default function Profile({ userProfile }) {
         userProfile={userProfile}
       />
       {/* //phần ảnh thay list ảnh <-> modal upload */}
-      {isLoggedUser && posts ? <Posts posts={posts} /> : <UploadArea />}
+      {!posts ? null : <Posts posts={posts} />}
+      {isLoggedUser && !posts ? <UploadArea /> : null}
     </>
   )
 }
